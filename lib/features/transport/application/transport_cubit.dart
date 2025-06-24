@@ -26,6 +26,22 @@ class TransportCubit extends Cubit<TransportState> {
   Future<void> rejectRequest(int transportId) async {
     emit(TransportActionInProgress());
     try {
+      await _authRepository.rejectRequest(transportId);
+
+      await Future.delayed(const Duration(seconds: 1));
+      emit(
+        TransportActionSuccess(transportId: transportId, action: 'rejected'),
+      );
+    } catch (e) {
+      emit(TransportActionFailure(message: 'Failed to reject request'));
+    }
+  }
+
+   Future<void> completedAdminRequest(int transportId) async {
+    emit(TransportActionInProgress());
+    try {
+      await _authRepository.completedAdminRequest(transportId);
+      
       await Future.delayed(const Duration(seconds: 1));
       emit(
         TransportActionSuccess(transportId: transportId, action: 'rejected'),

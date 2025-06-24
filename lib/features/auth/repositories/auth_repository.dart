@@ -193,4 +193,24 @@ class AuthRepository {
       print('exception in auth repo accept request $e');
     }
   }
+
+ Future<void> rejectRequest(int transportId) async {
+    try {
+      final response = await _apiService.post(
+        AuthConstants.rejectAdminRequest(transportId),
+      );
+    } catch (e) {
+      print('exception in auth repo accept request $e');
+    }
+  }
+
+  Future<void> completedAdminRequest(int transportId) async {
+     try {
+      final response = await _apiService.post(
+        AuthConstants.completedAdminRequest(transportId),
+      );
+    } catch (e) {
+      print('exception in auth repo accept request $e');
+    }
+  }
 }

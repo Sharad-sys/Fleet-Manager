@@ -8,6 +8,8 @@ class AuthConstants {
   static const String logoutEndpoint = '/api/auth/logout';
 
   static String acceptAdminRequest(int id) => '/api/transports/$id/accept';
+  static String rejectAdminRequest(int id) => '/api/transports/$id/reject';
+  static String completedAdminRequest(int id) => '/api/transports/$id/complete';
 
   //transport requests
   static const String pushToBackendEndPoint = '/api/vehicle-locations';

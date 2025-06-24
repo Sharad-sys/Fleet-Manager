@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:dio/dio.dart';
 import 'package:tester/features/map/application/map_cubit.dart';
+import 'package:tester/features/transport/application/transport_cubit.dart';
 
 class MapScreen extends StatefulWidget {
   final LatLng origin;
@@ -100,6 +101,9 @@ class _MapScreenState extends State<MapScreen> {
                 isDefaultAction: true,
                 child: const Text("Go to Home"),
                 onPressed: () {
+                  // context.read<TransportCubit>().completedAdminRequest(
+                  //   transportId,
+                  // );
                   Navigator.of(context).pop();
                   //Navigator.of(context).pop();
 
@@ -118,7 +122,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _sendLocationToBackend() async {
-
     //final url = '/api/transports/${vehicleId}/accept';
 
     final body = {

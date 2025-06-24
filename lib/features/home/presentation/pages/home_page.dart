@@ -37,15 +37,17 @@ class _HomePageState extends State<HomePage> {
               listener: (context, state) {
                 if (state is TransportActionSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Request ${state.action} successfully')),
+                    SnackBar(
+                      content: Text('Request ${state.action} successfully'),
+                    ),
                   );
                   if (state.action == 'accepted') {
                     setState(() => acceptedRequests.add(state.transportId));
                   }
                 } else if (state is TransportActionFailure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
                 }
               },
               child: Column(
@@ -56,18 +58,18 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'Welcome, ${authState.user.name} 👋',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: ElevatedButton.icon(
-                      onPressed: () => context.read<MapCubit>().getTransportDetails(),
+                      onPressed: () =>
+                          context.read<MapCubit>().getTransportDetails(),
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Fetch Transport Requests'),
+                      label: const Text('Fetch Pending Transport Requests'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(45),
                       ),
@@ -78,14 +80,30 @@ class _HomePageState extends State<HomePage> {
                     child: BlocBuilder<MapCubit, MapState>(
                       builder: (context, mapState) {
                         if (mapState is MapLoading) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (mapState is MapLoaded && mapState.transportList.isNotEmpty) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (mapState is MapLoaded &&
+                            mapState.transportList.isNotEmpty) {
                           return ListView.builder(
                             padding: const EdgeInsets.all(16),
                             itemCount: mapState.transportList.length,
                             itemBuilder: (context, index) {
                               final transport = mapState.transportList[index];
-                              final isAccepted = acceptedRequests.contains(transport.id);
+                              final isAccepted = acceptedRequests.contains(
+                                transport.id,
+                              );
+                              final isAlreadyAccepted =
+                                  mapState.transportList[index].isAccepted;
+
+                              if (isAlreadyAccepted) {
+                                return const Center(
+                                  child: Text(
+                                    'No transport requests available.',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                );
+                              }
 
                               return Card(
                                 elevation: 4,
@@ -96,7 +114,8 @@ class _HomePageState extends State<HomePage> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       ListTile(
                                         contentPadding: EdgeInsets.zero,
@@ -109,25 +128,37 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         subtitle: Text(
                                           'Assigned by: Admin',
-                                          style: TextStyle(color: Colors.grey[600]),
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      Text('From: ${transport.originLat}, ${transport.originLng}'),
-                                      Text('To: ${transport.destinationLat}, ${transport.destinationLng}'),
+                                      Text(
+                                        'From: ${transport.originLat}, ${transport.originLng}',
+                                      ),
+                                      Text(
+                                        'To: ${transport.destinationLat}, ${transport.destinationLng}',
+                                      ),
                                       const SizedBox(height: 12),
                                       if (!isAccepted)
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
                                           children: [
                                             TextButton.icon(
                                               onPressed: () => context
                                                   .read<TransportCubit>()
                                                   .rejectRequest(transport.id),
-                                              icon: const Icon(Icons.cancel, color: Colors.red),
+                                              icon: const Icon(
+                                                Icons.cancel,
+                                                color: Colors.red,
+                                              ),
                                               label: const Text(
                                                 'Reject',
-                                                style: TextStyle(color: Colors.red),
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(width: 8),
@@ -162,7 +193,8 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                           );
-                        } else if (mapState is MapLoaded && mapState.transportList.isEmpty) {
+                        } else if (mapState is MapLoaded &&
+                            mapState.transportList.isEmpty) {
                           return const Center(
                             child: Text(
                               'No transport requests available.',
