@@ -11,7 +11,7 @@ class AuthConstants {
   static const String pushToBackendEndPoint = '/api/vehicle-locations';
   static const String getRequestEndpoint = '/api/transports?showAll=true';
   static String acceptAdminRequest(int id) => '/api/transports/$id/accept';
-  static String rejectAdminRequest(int id) => '/api/transports/$id/reject';
+  static String rejectAdminRequest(int id) => '/api/transports/$id/cancel';
   static String completedAdminRequest(int id) => '/api/transports/$id/complete';
   static String showTransportHistory(int id) => '/api/users/staff/$id/completed-rides';
 

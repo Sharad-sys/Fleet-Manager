@@ -57,4 +57,15 @@ class MapCubit extends Cubit<MapState> {
       emit(MapError("Failed to complete transport: $e"));
     }
   }
+
+  void removeTransport(int id) {
+  if (state is MapLoaded) {
+    final updatedList = (state as MapLoaded)
+        .transportList
+        .where((t) => t.id != id)
+        .toList();
+    emit(MapLoaded(updatedList));
+  }
+}
+
 }
