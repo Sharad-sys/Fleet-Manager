@@ -9,6 +9,14 @@ class TransportCubit extends Cubit<TransportState> {
     : _authRepository = authRepository,
       super(TransportInitial());
 
+  Future<void> showTransportHistory(int staffId) async {
+    try {
+      await _authRepository.showTransportHistory(staffId);
+    } catch (e) {
+      print('exception $e');
+    }
+  }
+
   Future<void> acceptRequest(int transportId) async {
     emit(TransportActionInProgress());
     try {
@@ -37,11 +45,11 @@ class TransportCubit extends Cubit<TransportState> {
     }
   }
 
-   Future<void> completedAdminRequest(int transportId) async {
+  Future<void> completedAdminRequest(int transportId) async {
     emit(TransportActionInProgress());
     try {
       await _authRepository.completedAdminRequest(transportId);
-      
+
       await Future.delayed(const Duration(seconds: 1));
       emit(
         TransportActionSuccess(transportId: transportId, action: 'rejected'),

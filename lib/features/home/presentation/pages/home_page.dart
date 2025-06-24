@@ -24,6 +24,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.history)),
+          // SizedBox(width: 5),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => context.read<AuthCubit>().logout(),
@@ -96,14 +98,14 @@ class _HomePageState extends State<HomePage> {
                               final isAlreadyAccepted =
                                   mapState.transportList[index].isAccepted;
 
-                              if (isAlreadyAccepted) {
-                                return const Center(
-                                  child: Text(
-                                    'No transport requests available.',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                );
-                              }
+                              // if (isAlreadyAccepted) {
+                              //   return const Center(
+                              //     child: Text(
+                              //       'No transport requests available.',
+                              //       style: TextStyle(fontSize: 16),
+                              //     ),
+                              //   );
+                              // }
 
                               return Card(
                                 elevation: 4,
@@ -141,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                                         'To: ${transport.destinationLat}, ${transport.destinationLng}',
                                       ),
                                       const SizedBox(height: 12),
-                                      if (!isAccepted)
+                                      if (!isAccepted && !isAlreadyAccepted)
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,

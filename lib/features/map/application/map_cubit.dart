@@ -18,7 +18,7 @@ class MapCubit extends Cubit<MapState> {
       // print('AuthCubit: Login successful, user: $user');
       //emit(AuthAuthenticated(user));
 
-      final dataList = response.data['data'] as List;
+      final dataList = response.data['data']['results'] as List;
 
       final transports = dataList
           .map((item) => Transport.fromJson(item))
