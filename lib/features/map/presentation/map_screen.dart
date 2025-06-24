@@ -76,9 +76,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _startSimulation() {
-    _movementTimer = Timer.periodic(const Duration(milliseconds: 3000), (
-      timer,
-    ) {
+    _movementTimer = Timer.periodic(const Duration(milliseconds: 3), (timer) {
       if (_currentIndex < _routePoints.length) {
         setState(() {
           _currentPosition = _routePoints[_currentIndex];
@@ -199,10 +197,11 @@ class _MapScreenState extends State<MapScreen> {
                     point: _currentPosition,
                     width: 40,
                     height: 40,
-                    child: const Icon(
-                      Icons.local_shipping,
-                      size: 40,
-                      color: Colors.black,
+                    child: Image.asset(
+                      'lib/assets/truck.png',
+                      height: 60,
+                      width: 60,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ],
