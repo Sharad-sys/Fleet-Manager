@@ -39,4 +39,22 @@ class MapCubit extends Cubit<MapState> {
     }
   }
 
+  Future<void> completeTransport(int id) async {
+    try {
+      await _authRepository.completedAdminRequest(id);
+
+      if (state is MapLoaded) {
+        final currentList = List<Transport>.from(
+          (state as MapLoaded).transportList,
+        );
+        currentList.removeWhere((t) => t.id == id);
+
+        emit(MapLoaded(currentList));
+      }
+
+      emit(MapSuccess("Transport marked as completed"));
+    } catch (e) {
+      emit(MapError("Failed to complete transport: $e"));
+    }
+  }
 }

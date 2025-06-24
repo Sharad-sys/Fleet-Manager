@@ -12,8 +12,9 @@ import 'package:tester/features/transport/application/transport_cubit.dart';
 class MapScreen extends StatefulWidget {
   final LatLng origin;
   final LatLng destination;
+  final int transportId;
 
-  const MapScreen({super.key, required this.origin, required this.destination});
+  const MapScreen({super.key, required this.origin, required this.destination,required this.transportId});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -99,9 +100,10 @@ class _MapScreenState extends State<MapScreen> {
                 isDefaultAction: true,
                 child: const Text("Go to Home"),
                 onPressed: () {
-                  // context.read<TransportCubit>().completedAdminRequest(
-                  //   transportId,
-                  // );
+
+                  context.read<MapCubit>().completeTransport(
+                    widget.transportId,
+                  );
                   Navigator.of(context).pop();
                   //Navigator.of(context).pop();
 

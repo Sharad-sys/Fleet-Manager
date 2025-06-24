@@ -8,6 +8,7 @@ class SimulateLocationButton extends StatelessWidget {
   final String pointALong;
   final String pointBLat;
   final String pointBLong;
+  final int transportId;
 
   const SimulateLocationButton({
     super.key,
@@ -15,6 +16,7 @@ class SimulateLocationButton extends StatelessWidget {
     required this.pointALong,
     required this.pointBLat,
     required this.pointBLong,
+    required this.transportId,
   });
 
   Future<void> _handlePermissionAndNavigate(BuildContext context) async {
@@ -29,6 +31,7 @@ class SimulateLocationButton extends StatelessWidget {
             double.parse(pointBLat),
             double.parse(pointBLong),
           ),
+          'transportId':transportId,
         },
       );
     } else if (status.isDenied || status.isPermanentlyDenied) {

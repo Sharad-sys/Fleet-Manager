@@ -25,7 +25,6 @@ class AppRouter {
           return null;
         }
 
-        
         if (authState is AuthAuthenticated) {
           if (state.matchedLocation != '/home' &&
               state.matchedLocation != '/map') {
@@ -35,13 +34,12 @@ class AppRouter {
           return null;
         }
 
-     
         if (authState is AuthUnauthenticated) {
           if (state.matchedLocation == '/') {
             print('Router: Not authenticated, redirecting to /login');
             return '/login';
           }
-  
+
           return null;
         }
 
@@ -59,8 +57,12 @@ class AppRouter {
         GoRoute(
           path: '/map',
           builder: (context, state) {
-            final extra = state.extra as Map<String, LatLng>;
-            return MapScreen(origin: extra['origin']!,destination: extra['destination']!,);
+            final extra = state.extra as Map<String, dynamic>;
+            return MapScreen(
+              origin: extra['origin']! as LatLng,
+              destination: extra['destination']! as LatLng,
+              transportId: extra['transportId']! as int,
+            );
           },
         ),
       ],

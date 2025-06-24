@@ -25,7 +25,6 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Dashboard'),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.history)),
-          // SizedBox(width: 5),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => context.read<AuthCubit>().logout(),
@@ -85,27 +84,29 @@ class _HomePageState extends State<HomePage> {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
-                        } else if (mapState is MapLoaded &&
-                            mapState.transportList.isNotEmpty) {
+                        } else if (mapState is MapLoaded) {
+                          final filteredTransports = mapState.transportList
+                              .where((t) => t.status != 'completed')
+                              .toList();
+
+                          if (filteredTransports.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                'No transport requests available.',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            );
+                          }
+
                           return ListView.builder(
                             padding: const EdgeInsets.all(16),
-                            itemCount: mapState.transportList.length,
+                            itemCount: filteredTransports.length,
                             itemBuilder: (context, index) {
-                              final transport = mapState.transportList[index];
+                              final transport = filteredTransports[index];
                               final isAccepted = acceptedRequests.contains(
                                 transport.id,
                               );
-                              final isAlreadyAccepted =
-                                  mapState.transportList[index].isAccepted;
-
-                              // if (isAlreadyAccepted) {
-                              //   return const Center(
-                              //     child: Text(
-                              //       'No transport requests available.',
-                              //       style: TextStyle(fontSize: 16),
-                              //     ),
-                              //   );
-                              // }
+                              final isAlreadyAccepted = transport.isAccepted;
 
                               return Card(
                                 elevation: 4,
@@ -187,6 +188,7 @@ class _HomePageState extends State<HomePage> {
                                           pointALong: transport.originLng,
                                           pointBLat: transport.destinationLat,
                                           pointBLong: transport.destinationLng,
+                                          transportId: transport.id,
                                         ),
                                       ],
                                     ],
@@ -194,14 +196,6 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               );
                             },
-                          );
-                        } else if (mapState is MapLoaded &&
-                            mapState.transportList.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              'No transport requests available.',
-                              style: TextStyle(fontSize: 16),
-                            ),
                           );
                         } else {
                           return const SizedBox();
