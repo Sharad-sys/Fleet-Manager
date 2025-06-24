@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tester/features/auth/cubit/auth_cubit.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
 import 'package:tester/features/map/application/map_cubit.dart';
 import 'package:tester/features/map/application/map_state.dart';
 import 'package:tester/features/map/presentation/widgets/simulate_location_button.dart';
 import 'package:tester/features/transport/application/transport_cubit.dart';
 import 'package:tester/features/transport/application/transport_state.dart';
-import '../../../auth/cubit/auth_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,13 +22,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthCubit>().logout();
-            },
+            onPressed: () => context.read<AuthCubit>().logout(),
           ),
         ],
       ),
@@ -42,9 +40,7 @@ class _HomePageState extends State<HomePage> {
                     SnackBar(content: Text('Request ${state.action} successfully')),
                   );
                   if (state.action == 'accepted') {
-                    setState(() {
-                      acceptedRequests.add(state.transportId);
-                    });
+                    setState(() => acceptedRequests.add(state.transportId));
                   }
                 } else if (state is TransportActionFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -53,97 +49,106 @@ class _HomePageState extends State<HomePage> {
                 }
               },
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 16),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      'Welcome, ${authState.user.name}!',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                      'Welcome, ${authState.user.name} 👋',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ElevatedButton.icon(
+                      onPressed: () => context.read<MapCubit>().getTransportDetails(),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Fetch Transport Requests'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(45),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<MapCubit>().getTransportDetails();
-                    },
-                    child: const Text('Fetch Transport Requests'),
-                  ),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: BlocBuilder<MapCubit, MapState>(
                       builder: (context, mapState) {
                         if (mapState is MapLoading) {
                           return const Center(child: CircularProgressIndicator());
-                        } else if (mapState is MapLoaded &&
-                            mapState.transportList.isNotEmpty) {
+                        } else if (mapState is MapLoaded && mapState.transportList.isNotEmpty) {
                           return ListView.builder(
+                            padding: const EdgeInsets.all(16),
                             itemCount: mapState.transportList.length,
                             itemBuilder: (context, index) {
                               final transport = mapState.transportList[index];
                               final isAccepted = acceptedRequests.contains(transport.id);
-                              final status = mapState.transportList[index].status;
 
                               return Card(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
+                                margin: const EdgeInsets.only(bottom: 16),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
+                                  padding: const EdgeInsets.all(16),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        transport.description ?? 'No Description',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        title: Text(
+                                          transport.description,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          'Assigned by: Admin',
+                                          style: TextStyle(color: Colors.grey[600]),
                                         ),
                                       ),
                                       const SizedBox(height: 8),
                                       Text('From: ${transport.originLat}, ${transport.originLng}'),
                                       Text('To: ${transport.destinationLat}, ${transport.destinationLng}'),
-                                      Text('Assigned By: Admin'),
                                       const SizedBox(height: 12),
-                                      if (!isAccepted) ...[
+                                      if (!isAccepted)
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                context
-                                                    .read<TransportCubit>()
-                                                    .rejectRequest(transport.id);
-                                              },
-                                              child: const Text(
+                                            TextButton.icon(
+                                              onPressed: () => context
+                                                  .read<TransportCubit>()
+                                                  .rejectRequest(transport.id),
+                                              icon: const Icon(Icons.cancel, color: Colors.red),
+                                              label: const Text(
                                                 'Reject',
                                                 style: TextStyle(color: Colors.red),
                                               ),
                                             ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                context
-                                                    .read<TransportCubit>()
-                                                    .acceptRequest(transport.id);
-                                              },
-                                              child: const Text('Accept'),
+                                            const SizedBox(width: 8),
+                                            ElevatedButton.icon(
+                                              onPressed: () => context
+                                                  .read<TransportCubit>()
+                                                  .acceptRequest(transport.id),
+                                              icon: const Icon(Icons.check),
+                                              label: const Text('Accept'),
                                             ),
                                           ],
-                                        ),
-                                      ] else ...[
+                                        )
+                                      else ...[
                                         const Text(
-                                          'Request Accepted',
+                                          'Request Accepted ✅',
                                           style: TextStyle(
                                             color: Colors.green,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 10),
                                         SimulateLocationButton(
                                           pointALat: transport.originLat,
                                           pointALong: transport.originLng,
@@ -157,10 +162,12 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                           );
-                        } else if (mapState is MapLoaded &&
-                            mapState.transportList.isEmpty) {
+                        } else if (mapState is MapLoaded && mapState.transportList.isEmpty) {
                           return const Center(
-                            child: Text('No transport requests available.'),
+                            child: Text(
+                              'No transport requests available.',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           );
                         } else {
                           return const SizedBox();

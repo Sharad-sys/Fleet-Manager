@@ -33,7 +33,7 @@ class MapCubit extends Cubit<MapState> {
 
   Future<void> pushDataToBackEnd(Map<String, num> body) async {
     try {
-      final reponse = await _authRepository.pushLocationToBackend(body);
+      await _authRepository.pushLocationToBackend(body);
     } catch (e) {
       print("exception in map_cubit");
     }

@@ -266,7 +266,7 @@ class _LoginViewState extends State<LoginView> {
         return AuthConstants.emailRequired;
       case EmailValidationError.invalid:
         return AuthConstants.emailInvalid;
-      default:
+      default: 
         return null;
     }
   }

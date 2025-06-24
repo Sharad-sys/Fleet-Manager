@@ -12,7 +12,7 @@ class TransportCubit extends Cubit<TransportState> {
   Future<void> acceptRequest(int transportId) async {
     emit(TransportActionInProgress());
     try {
-      final response = await _authRepository.acceptRequest(transportId);
+      await _authRepository.acceptRequest(transportId);
 
       await Future.delayed(const Duration(seconds: 1));
       emit(
