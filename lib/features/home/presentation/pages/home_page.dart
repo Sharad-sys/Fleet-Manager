@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tester/features/auth/cubit/auth_cubit.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
 import 'package:tester/features/map/application/map_cubit.dart';
@@ -31,7 +32,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.history)),
+          IconButton(
+            onPressed: () {
+              context.go('/history', extra: {'staffId': 2});
+            },
+            icon: const Icon(Icons.history),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => context.read<AuthCubit>().logout(),
@@ -58,8 +64,8 @@ class _HomePageState extends State<HomePage> {
                   if (state.action == 'accepted') {
                     setState(() => acceptedRequests.add(state.transportId));
                   }
-                  if(state.action == 'rejected'){
-                   context.read<MapCubit>().removeTransport(state.transportId);
+                  if (state.action == 'rejected') {
+                    context.read<MapCubit>().removeTransport(state.transportId);
                   }
                 } else if (state is TransportActionFailure) {
                   ScaffoldMessenger.of(
@@ -131,6 +137,7 @@ class _HomePageState extends State<HomePage> {
                                   final isAlreadyAccepted =
                                       transport.isAccepted;
                                   final status = transport.status;
+                                  final vehicleId = transport.vehicleId!;
 
                                   return Card(
                                     elevation: 4,
@@ -179,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                                                       .rejectRequest(
                                                         transport.id,
                                                       ),
-                                                      
+
                                                   icon: const Icon(
                                                     Icons.cancel,
                                                     color: Colors.red,
@@ -203,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               ],
                                             )
-                                          else if (status=='cancelled')
+                                          else if (status == 'cancelled')
                                             Row(
                                               children: [
                                                 const Text(
@@ -232,6 +239,7 @@ class _HomePageState extends State<HomePage> {
                                               pointBLong:
                                                   transport.destinationLng,
                                               transportId: transport.id,
+                                              vehicleId: vehicleId,
                                             ),
                                           ],
                                         ],

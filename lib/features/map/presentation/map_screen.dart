@@ -13,8 +13,15 @@ class MapScreen extends StatefulWidget {
   final LatLng origin;
   final LatLng destination;
   final int transportId;
+  final int vehicleId;
 
-  const MapScreen({super.key, required this.origin, required this.destination,required this.transportId});
+  const MapScreen({
+    super.key,
+    required this.origin,
+    required this.destination,
+    required this.transportId,
+    required this.vehicleId,
+  });
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -100,7 +107,6 @@ class _MapScreenState extends State<MapScreen> {
                 isDefaultAction: true,
                 child: const Text("Go to Home"),
                 onPressed: () {
-
                   context.read<MapCubit>().completeTransport(
                     widget.transportId,
                   );
@@ -125,7 +131,7 @@ class _MapScreenState extends State<MapScreen> {
     //final url = '/api/transports/${vehicleId}/accept';
 
     final body = {
-      "vehicleId": 6,
+      "vehicleId": widget.vehicleId,
       "latitude": _currentPosition.latitude,
       "longitude": _currentPosition.longitude,
     };

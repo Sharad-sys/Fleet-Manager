@@ -9,6 +9,7 @@ class SimulateLocationButton extends StatelessWidget {
   final String pointBLat;
   final String pointBLong;
   final int transportId;
+  final int vehicleId;
 
   const SimulateLocationButton({
     super.key,
@@ -17,6 +18,7 @@ class SimulateLocationButton extends StatelessWidget {
     required this.pointBLat,
     required this.pointBLong,
     required this.transportId,
+    required this.vehicleId,
   });
 
   Future<void> _handlePermissionAndNavigate(BuildContext context) async {
@@ -31,7 +33,8 @@ class SimulateLocationButton extends StatelessWidget {
             double.parse(pointBLat),
             double.parse(pointBLong),
           ),
-          'transportId':transportId,
+          'transportId': transportId,
+          'vehicleId':vehicleId,
         },
       );
     } else if (status.isDenied || status.isPermanentlyDenied) {

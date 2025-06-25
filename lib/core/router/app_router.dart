@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
+import 'package:tester/features/history/presentation/history_screen.dart';
 import 'package:tester/features/map/presentation/map_screen.dart';
 import '../../features/auth/cubit/auth_cubit.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -27,7 +28,8 @@ class AppRouter {
 
         if (authState is AuthAuthenticated) {
           if (state.matchedLocation != '/home' &&
-              state.matchedLocation != '/map') {
+              state.matchedLocation != '/map' &&
+              state.matchedLocation != '/history') {
             print('Router: Authenticated, redirecting to /home');
             return '/home';
           }
@@ -62,9 +64,17 @@ class AppRouter {
               origin: extra['origin']! as LatLng,
               destination: extra['destination']! as LatLng,
               transportId: extra['transportId']! as int,
+              vehicleId: extra['vehicleId'] as int,
             );
           },
         ),
+        // GoRoute(
+        //   path: '/history',
+        //   builder: (context, state) {
+        //     //final extra = state.extra.staffId as Map<String, dynamic>;
+        //     //return HistoryScreen(staffId: extra['staffId']);
+        //   },
+        // ),
       ],
     );
   }

@@ -10,6 +10,7 @@ class Transport {
   final bool isAccepted;
   final String? createdBy;
   final String? assignedTo;
+  final int? vehicleId;
 
   Transport({
     required this.id,
@@ -23,6 +24,7 @@ class Transport {
     required this.isAccepted,
     required this.createdBy,
     required this.assignedTo,
+    required this.vehicleId,
   });
 
   factory Transport.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class Transport {
       isAccepted: json['isAccepted'],
       createdBy: json['createdBy']?['name'],
       assignedTo: json['assignedTo']?['name'],
+      vehicleId: (json['assignments'] as List?)?.isNotEmpty==true ? json['assignments'][0]['vehicleId'] : null,
     );
   }
 }

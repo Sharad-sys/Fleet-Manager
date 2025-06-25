@@ -214,11 +214,15 @@ class AuthRepository {
     }
   }
 
-  Future<void> showTransportHistory(int staffId) async {
+  Future<Response> showTransportHistory(int staffId) async {
     try {
-      await _apiService.post(AuthConstants.showTransportHistory(staffId));
+      final response = await _apiService.post(
+        AuthConstants.showTransportHistory(staffId),
+      );
+      return response;
     } catch (e) {
       print('exception');
+       throw Exception('get Transport failed: $e}');
     }
   }
 }
