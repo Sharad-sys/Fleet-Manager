@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:dio/dio.dart';
 import 'package:tester/features/map/application/map_cubit.dart';
-import 'package:tester/features/transport/application/transport_cubit.dart';
 
 class MapScreen extends StatefulWidget {
   final LatLng origin;

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/auth_constants.dart';
 import '../models/user.dart';
@@ -175,10 +176,7 @@ class AuthRepository {
 
   Future<void> pushLocationToBackend(Map<String, num> body) async {
     try {
-      final response = await _apiService.post(
-        AuthConstants.pushToBackendEndPoint,
-        data: body,
-      );
+      await _apiService.post(AuthConstants.pushToBackendEndPoint, data: body);
     } catch (e) {
       print('exception in auth_reposity');
     }
@@ -186,9 +184,7 @@ class AuthRepository {
 
   Future<void> acceptRequest(int transportId) async {
     try {
-      final response = await _apiService.post(
-        AuthConstants.acceptAdminRequest(transportId),
-      );
+      await _apiService.post(AuthConstants.acceptAdminRequest(transportId));
     } catch (e) {
       print('exception in auth repo accept request $e');
     }
@@ -196,9 +192,7 @@ class AuthRepository {
 
   Future<void> rejectRequest(int transportId) async {
     try {
-      final response = await _apiService.post(
-        AuthConstants.rejectAdminRequest(transportId),
-      );
+      await _apiService.post(AuthConstants.rejectAdminRequest(transportId));
     } catch (e) {
       print('exception in auth repo accept request $e');
     }
@@ -206,9 +200,7 @@ class AuthRepository {
 
   Future<void> completedAdminRequest(int transportId) async {
     try {
-      final response = await _apiService.post(
-        AuthConstants.completedAdminRequest(transportId),
-      );
+      await _apiService.post(AuthConstants.completedAdminRequest(transportId));
     } catch (e) {
       print('exception in auth repo accept request $e');
     }
@@ -222,7 +214,19 @@ class AuthRepository {
       return response;
     } catch (e) {
       print('exception');
-       throw Exception('get Transport failed: $e}');
+      throw Exception('get Transport failed: $e}');
     }
   }
+
+Future<List<Placemark>> convertCoordinatesToAddress(double lat, double long) async {
+  try {
+    final placemarks = await placemarkFromCoordinates(lat, long);
+    return placemarks;
+  } catch (e) {
+    print('Error during reverse geocoding: $e');
+    throw Exception('Failed to convert coordinates to address: $e');
+  }
+}
+
+
 }

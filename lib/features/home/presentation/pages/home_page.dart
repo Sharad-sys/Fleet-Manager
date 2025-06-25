@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tester/features/auth/cubit/auth_cubit.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
@@ -19,11 +20,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Set<int> acceptedRequests = {};
   bool isProcessing = false;
+  final Map<int, String> _addressCache = {};
 
   @override
   void initState() {
-    context.read<MapCubit>().getTransportDetails();
     super.initState();
+    context.read<MapCubit>().getTransportDetails();
+  }
+
+  Future<String> _getAddress(int id, double lat, double lng) async {
+    final cacheKey = id;
+    if (_addressCache.containsKey(cacheKey)) {
+      return _addressCache[cacheKey]!;
+    }
+    try {
+      final placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        final addr = [
+          place.street,
+          place.locality,
+          place.administrativeArea,
+          place.country
+        ].where((s) => s != null && s.isNotEmpty).join(', ');
+        _addressCache[cacheKey] = addr;
+        return addr;
+      }
+    } catch (e) {
+      debugPrint('Geocode error ($id): $e');
+    }
+    return 'Unknown location';
   }
 
   @override
@@ -32,16 +58,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          IconButton(
-            onPressed: () {
-              context.go('/history');
-            },
-            icon: const Icon(Icons.history),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => context.read<AuthCubit>().logout(),
-          ),
+          IconButton(icon: const Icon(Icons.history), onPressed: () => context.go('/history')),
+          IconButton(icon: const Icon(Icons.logout), onPressed: () => context.read<AuthCubit>().logout()),
         ],
       ),
       body: BlocBuilder<AuthCubit, AuthState>(
@@ -54,12 +72,9 @@ class _HomePageState extends State<HomePage> {
                 } else {
                   setState(() => isProcessing = false);
                 }
-
                 if (state is TransportActionSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Request ${state.action} successfully'),
-                    ),
+                    SnackBar(content: Text('Request ${state.action} successfully')),
                   );
                   if (state.action == 'accepted') {
                     setState(() => acceptedRequests.add(state.transportId));
@@ -68,36 +83,31 @@ class _HomePageState extends State<HomePage> {
                     context.read<MapCubit>().removeTransport(state.transportId);
                   }
                 } else if (state is TransportActionFailure) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(state.message)));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message))
+                  );
                 }
               },
               child: Stack(
                 children: [
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 16),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'Welcome, ${authState.user.name} 👋',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: ElevatedButton.icon(
-                          onPressed: () =>
-                              context.read<MapCubit>().getTransportDetails(),
+                          onPressed: () => context.read<MapCubit>().getTransportDetails(),
                           icon: const Icon(Icons.refresh),
-                          label: const Text('Fetch Pending Transport Requests'),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(45),
-                          ),
+                          label: const Text('Fetch Pending Requests'),
+                          style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(45)),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -105,173 +115,101 @@ class _HomePageState extends State<HomePage> {
                         child: BlocBuilder<MapCubit, MapState>(
                           builder: (context, mapState) {
                             if (mapState is MapLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
+                              return const Center(child: CircularProgressIndicator());
                             } else if (mapState is MapLoaded) {
-                              final filteredTransports = mapState.transportList
-                                  .where(
-                                    (t) =>
-                                        t.status != 'completed' &&
-                                        t.status != 'cancelled',
-                                  )
+                              final transports = mapState.transportList
+                                  .where((t) => t.status != 'completed' && t.status != 'cancelled')
                                   .toList();
-
-                              if (filteredTransports.isEmpty) {
-                                return const Center(
-                                  child: Text(
-                                    'No transport requests available.',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                );
+                              if (transports.isEmpty) {
+                                return const Center(child: Text('No transport requests available.', style: TextStyle(fontSize: 16)));
                               }
-
                               return ListView.builder(
                                 padding: const EdgeInsets.all(16),
-                                itemCount: filteredTransports.length,
-                                itemBuilder: (context, index) {
-                                  final transport = filteredTransports[index];
-                                  final isAccepted = acceptedRequests.contains(
-                                    transport.id,
-                                  );
-                                  final isAlreadyAccepted =
-                                      transport.isAccepted;
-                                  final status = transport.status;
-                                  final vehicleId = transport.vehicleId!;
+                                itemCount: transports.length,
+                                itemBuilder: (context, i) {
+                                  final tr = transports[i];
+                                  final isAccepted = acceptedRequests.contains(tr.id);
+                                  final status = tr.status;
 
                                   return Card(
                                     elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                     margin: const EdgeInsets.only(bottom: 16),
                                     child: Padding(
                                       padding: const EdgeInsets.all(16),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          ListTile(
-                                            contentPadding: EdgeInsets.zero,
-                                            title: Text(
-                                              transport.description,
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            subtitle: Text(
-                                              'Assigned by: Admin',
-                                              style: TextStyle(
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ),
+                                          Text(tr.description, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                                           const SizedBox(height: 8),
-                                          Text(
-                                            'From: ${transport.originLat}, ${transport.originLng}',
+                                          FutureBuilder<String>(
+                                            future: _getAddress(tr.id, double.parse(tr.originLat), double.parse(tr.originLng)),
+                                            builder: (ctx, snap) => Text('From: ${snap.data ?? "Loading..."}'),
                                           ),
-                                          Text(
-                                            'To: ${transport.destinationLat}, ${transport.destinationLng}',
+                                          const SizedBox(height: 4),
+                                          FutureBuilder<String>(
+                                            future: _getAddress(-tr.id, double.parse(tr.destinationLat), double.parse(tr.destinationLng)),
+                                            builder: (ctx, snap) => Text('To: ${snap.data ?? "Loading..."}'),
                                           ),
                                           const SizedBox(height: 12),
-                                          if (!isAccepted && !isAlreadyAccepted)
+                                          if (!isAccepted && !tr.isAccepted)
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                              mainAxisAlignment: MainAxisAlignment.end,
                                               children: [
                                                 TextButton.icon(
-                                                  onPressed: () => context
-                                                      .read<TransportCubit>()
-                                                      .rejectRequest(
-                                                        transport.id,
-                                                      ),
-
-                                                  icon: const Icon(
-                                                    Icons.cancel,
-                                                    color: Colors.red,
-                                                  ),
-                                                  label: const Text(
-                                                    'Reject',
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
+                                                  onPressed: () => context.read<TransportCubit>().rejectRequest(tr.id),
+                                                  icon: const Icon(Icons.cancel, color: Colors.red),
+                                                  label: const Text('Reject', style: TextStyle(color: Colors.red)),
                                                 ),
                                                 const SizedBox(width: 8),
                                                 ElevatedButton.icon(
-                                                  onPressed: () => context
-                                                      .read<TransportCubit>()
-                                                      .acceptRequest(
-                                                        transport.id,
-                                                      ),
+                                                  onPressed: () => context.read<TransportCubit>().acceptRequest(tr.id),
                                                   icon: const Icon(Icons.check),
                                                   label: const Text('Accept'),
                                                 ),
                                               ],
                                             )
                                           else if (status == 'cancelled')
-                                            Row(
+                                            const Text('Request Rejected', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600))
+                                          else
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                const Text(
-                                                  'Request Rejected',
-                                                  style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
+                                                const Text('Request Accepted ✅', style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600)),
+                                                const SizedBox(height: 10),
+                                                SimulateLocationButton(
+                                                  pointALat: tr.originLat,
+                                                  pointALong: tr.originLng,
+                                                  pointBLat: tr.destinationLat,
+                                                  pointBLong: tr.destinationLng,
+                                                  transportId: tr.id,
+                                                  vehicleId: tr.vehicleId!,
                                                 ),
                                               ],
-                                            )
-                                          else ...[
-                                            const Text(
-                                              'Request Accepted ✅',
-                                              style: TextStyle(
-                                                color: Colors.green,
-                                                fontWeight: FontWeight.w600,
-                                              ),
                                             ),
-                                            const SizedBox(height: 10),
-                                            SimulateLocationButton(
-                                              pointALat: transport.originLat,
-                                              pointALong: transport.originLng,
-                                              pointBLat:
-                                                  transport.destinationLat,
-                                              pointBLong:
-                                                  transport.destinationLng,
-                                              transportId: transport.id,
-                                              vehicleId: vehicleId,
-                                            ),
-                                          ],
                                         ],
                                       ),
                                     ),
                                   );
                                 },
                               );
-                            } else {
-                              return const SizedBox();
                             }
+                            return const SizedBox();
                           },
                         ),
                       ),
                     ],
                   ),
                   if (isProcessing)
-                    Container(
-                      color: Color.fromRGBO(0, 0, 0, 0.4),
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
+                    Container(color: Color.fromRGBO(0, 0, 0, 0.4), child: const Center(child: CircularProgressIndicator())),
                 ],
               ),
             );
           } else if (authState is AuthUnauthenticated) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.go('/login');
-            });
+            WidgetsBinding.instance.addPostFrameCallback((_) => context.go('/login'));
             return const SizedBox();
-          } else {
-            return Center(child: CircularProgressIndicator());
           }
+          return const Center(child: CircularProgressIndicator());
         },
       ),
     );

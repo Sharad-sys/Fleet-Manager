@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:tester/features/history/application/cubit/history_cubit.dart';
 import 'package:tester/features/history/application/cubit/history_state.dart';
 
@@ -12,6 +14,8 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  final Map<String, String> _addressCache = {};
+
   @override
   void initState() {
     super.initState();
@@ -19,8 +23,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   String formatDateTime(DateTime iso) {
-    // if (dt == null) return "N/A";
     return DateFormat.yMMMd().add_jm().format(iso);
+  }
+
+  Future<void> _resolveAddress({
+    required double lat,
+    required double long,
+    required String key,
+  }) async {
+    if (_addressCache.containsKey(key)) return;
+
+    try {
+      final placemarks = await placemarkFromCoordinates(lat, long);
+      final placemark = placemarks.first;
+      final fullAddress = "${placemark.name}, ${placemark.locality}";
+      setState(() {
+        _addressCache[key] = fullAddress;
+      });
+    } catch (_) {
+      setState(() {
+        _addressCache[key] = "Unknown location";
+      });
+    }
   }
 
   @override
@@ -28,6 +52,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Completed Rides'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'),
+        ),
       ),
       body: BlocBuilder<HistoryCubit, HistoryState>(
         builder: (context, state) {
@@ -50,8 +78,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
               itemCount: rides.length,
               itemBuilder: (context, index) {
                 final ride = rides[index];
+                final fromKey = "from_${ride.id}";
+                final toKey = "to_${ride.id}";
+
+                _resolveAddress(
+                  lat: ride.originLat,
+                  long: ride.originLng,
+                  key: fromKey,
+                );
+                _resolveAddress(
+                  lat: ride.destinationLat,
+                  long: ride.destinationLng,
+                  key: toKey,
+                );
+
                 return Card(
-                  elevation: 3,
+                  elevation: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -76,7 +118,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                         const SizedBox(height: 12),
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
                             const SizedBox(width: 8),
@@ -96,7 +137,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                "From: ${ride.originLat}, ${ride.originLng}",
+                                "From: ${_addressCache[fromKey] ?? 'Resolving...'}",
                                 style: const TextStyle(fontSize: 14),
                               ),
                             ),
@@ -110,7 +151,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                "To: ${ride.destinationLat}, ${ride.destinationLng}",
+                                "To: ${_addressCache[toKey] ?? 'Resolving...'}",
                                 style: const TextStyle(fontSize: 14),
                               ),
                             ),
