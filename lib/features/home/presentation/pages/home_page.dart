@@ -258,14 +258,20 @@ class _HomePageState extends State<HomePage> {
                   ),
                   if (isProcessing)
                     Container(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Color.fromRGBO(0, 0, 0, 0.4),
                       child: const Center(child: CircularProgressIndicator()),
                     ),
                 ],
               ),
             );
+          } else if (authState is AuthUnauthenticated) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go('/login');
+            });
+            return const SizedBox();
+          } else {
+            return Center(child: CircularProgressIndicator());
           }
-          return const Center(child: CircularProgressIndicator());
         },
       ),
     );

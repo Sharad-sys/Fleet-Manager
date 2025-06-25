@@ -58,7 +58,7 @@ class AuthRepository {
 
   Future<void> logout() async {
     try {
-      await _apiService.post(AuthConstants.logoutEndpoint);
+      await _apiService.get(AuthConstants.logoutEndpoint);
     } catch (e) {
       // Even if logout API fails, we should clear local data
       print('Logout API failed: $e');
