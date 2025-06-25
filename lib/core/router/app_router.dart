@@ -68,13 +68,12 @@ class AppRouter {
             );
           },
         ),
-        // GoRoute(
-        //   path: '/history',
-        //   builder: (context, state) {
-        //     //final extra = state.extra.staffId as Map<String, dynamic>;
-        //     //return HistoryScreen(staffId: extra['staffId']);
-        //   },
-        // ),
+        GoRoute(
+          path: '/history',
+          builder: (context, state) {
+            return HistoryScreen();
+          },
+        ),
       ],
     );
   }

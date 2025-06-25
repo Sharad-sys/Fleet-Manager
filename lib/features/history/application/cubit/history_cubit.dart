@@ -10,10 +10,10 @@ class HistoryCubit extends Cubit<HistoryState> {
     : _authRepository = authRepository,
       super(HistoryInitial());
 
- Future<void> fetchHistory(int staffId) async {
+ Future<void> fetchHistory() async {
   emit(HistoryLoading());
   try {
-    final response = await _authRepository.showTransportHistory(staffId);
+    final response = await _authRepository.showTransportHistory();
 
     print("response: ${response.data}");
 

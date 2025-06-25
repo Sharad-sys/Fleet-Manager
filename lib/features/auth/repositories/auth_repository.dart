@@ -214,10 +214,10 @@ class AuthRepository {
     }
   }
 
-  Future<Response> showTransportHistory(int staffId) async {
+  Future<Response> showTransportHistory() async {
     try {
-      final response = await _apiService.post(
-        AuthConstants.showTransportHistory(staffId),
+      final response = await _apiService.get(
+        AuthConstants.showTransportHistory,
       );
       return response;
     } catch (e) {

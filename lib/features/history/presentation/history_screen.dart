@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:tester/features/history/application/cubit/history_cubit.dart';
 import 'package:tester/features/history/application/cubit/history_state.dart';
 
-class HistoryScreen extends StatelessWidget {
-  final int staffId;
+class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key});
 
-  const HistoryScreen({super.key, required this.staffId});
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<HistoryCubit>().fetchHistory();
+  }
+
+  String formatDateTime(DateTime iso) {
+    // if (dt == null) return "N/A";
+    return DateFormat.yMMMd().add_jm().format(iso);
+  }
 
   @override
   Widget build(BuildContext context) {
-  
-    context.read<HistoryCubit>().fetchHistory(staffId);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Completed Rides'),
@@ -25,23 +37,85 @@ class HistoryScreen extends StatelessWidget {
             final rides = state.completedRides;
 
             if (rides.isEmpty) {
-              return const Center(child: Text('No completed rides.'));
+              return const Center(
+                child: Text(
+                  'No completed rides yet.',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              );
             }
 
             return ListView.builder(
+              padding: const EdgeInsets.all(16),
               itemCount: rides.length,
               itemBuilder: (context, index) {
                 final ride = rides[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: ListTile(
-                    title: Text("Ride ID: ${ride.id}"),
-                    subtitle: Column(
+                  elevation: 3,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Accepted: ${ride.acceptedAt}"),
-                        Text("From: ${ride.originLat}, ${ride.originLng}"),
-                        Text("To: ${ride.destinationLat}, ${ride.destinationLng}"),
+                        Row(
+                          children: [
+                            const Icon(Icons.directions_car, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Ride ID: ${ride.id}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                "Accepted at: ${formatDateTime(ride.acceptedAt)}",
+                                style: const TextStyle(fontSize: 14, color: Colors.black87),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.location_on, size: 18, color: Colors.redAccent),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                "From: ${ride.originLat}, ${ride.originLng}",
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.flag, size: 18, color: Colors.green),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                "To: ${ride.destinationLat}, ${ride.destinationLng}",
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -49,9 +123,14 @@ class HistoryScreen extends StatelessWidget {
               },
             );
           } else if (state is HistoryFailure) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(
+              child: Text(
+                'Error: ${state.message}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           } else {
-            return const SizedBox.shrink(); 
+            return const SizedBox.shrink();
           }
         },
       ),

@@ -13,7 +13,7 @@ class AuthConstants {
   static String acceptAdminRequest(int id) => '/api/transports/$id/accept';
   static String rejectAdminRequest(int id) => '/api/transports/$id/cancel';
   static String completedAdminRequest(int id) => '/api/transports/$id/complete';
-  static String showTransportHistory(int id) => '/api/users/staff/$id/completed-rides';
+  static String showTransportHistory = '/api/users/staff/completed-rides';
 
   // Storage Keys
   static const String userKey = 'user_data';

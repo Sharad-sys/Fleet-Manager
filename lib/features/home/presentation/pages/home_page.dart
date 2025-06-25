@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              context.go('/history', extra: {'staffId': 2});
+              context.go('/history');
             },
             icon: const Icon(Icons.history),
           ),
