@@ -20,6 +20,12 @@ class _HomePageState extends State<HomePage> {
   bool isProcessing = false;
 
   @override
+  void initState() {
+    context.read<MapCubit>().getTransportDetails();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
