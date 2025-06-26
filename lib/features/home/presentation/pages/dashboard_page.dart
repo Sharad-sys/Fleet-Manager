@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tester/features/auth/cubit/auth_cubit.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
 import 'package:tester/features/home/presentation/pages/home_page.dart';
+import 'package:tester/features/home/presentation/pages/profile_page.dart';
 import 'package:tester/features/home/presentation/pages/stats_page.dart';
 import 'package:tester/features/home/presentation/widgets/bottom_nav_bar.dart';
 
@@ -20,6 +21,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final List<Widget> _screens = [
     Center(child: HomePage()),
     Center(child: StatsPage()),
+    Center(child: ProfilePage(),)
   ];
 
   void _onTappedItem(int index) {
