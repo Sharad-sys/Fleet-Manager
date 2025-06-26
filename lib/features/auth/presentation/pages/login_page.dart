@@ -42,21 +42,18 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: BlocListener<AuthCubit, AuthState>(
           listener: (context, state) {
-            print('LoginPage: Auth state changed to: $state');
             if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: Colors.red,
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );
             } else if (state is AuthAuthenticated) {
-              print('LoginPage: Login successful, user: ${state.user}');
-        
               context.go('/home');
             }
           },
@@ -66,35 +63,34 @@ class _LoginViewState extends State<LoginView> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-            
                     Icon(
                       Icons.lock_outline,
                       size: 80,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'Welcome Back',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Sign in to your account',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
-
-             
                     BlocBuilder<LoginFormCubit, LoginFormState>(
                       buildWhen: (previous, current) =>
                           previous.email != current.email,
@@ -106,27 +102,12 @@ class _LoginViewState extends State<LoginView> {
                             labelText: 'Email',
                             hintText: 'Enter your email',
                             prefixIcon: const Icon(Icons.email_outlined),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                                width: 2,
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.red),
-                            ),
                             errorText: state.email.displayError != null
                                 ? _getEmailErrorMessage(state.email.error)
                                 : null,
+                          ),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                           onChanged: (value) {
                             context.read<LoginFormCubit>().emailChanged(value);
@@ -135,8 +116,6 @@ class _LoginViewState extends State<LoginView> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-           
                     BlocBuilder<LoginFormCubit, LoginFormState>(
                       buildWhen: (previous, current) =>
                           previous.password != current.password,
@@ -148,37 +127,22 @@ class _LoginViewState extends State<LoginView> {
                             labelText: 'Password',
                             hintText: 'Enter your password',
                             prefixIcon: const Icon(Icons.lock_outlined),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                                width: 2,
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.red),
-                            ),
                             errorText: state.password.displayError != null
                                 ? _getPasswordErrorMessage(state.password.error)
                                 : null,
                           ),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                           onChanged: (value) {
-                            context.read<LoginFormCubit>().passwordChanged(value);
+                            context.read<LoginFormCubit>().passwordChanged(
+                              value,
+                            );
                           },
                         );
                       },
                     ),
                     const SizedBox(height: 24),
-
-          
                     BlocBuilder<LoginFormCubit, LoginFormState>(
                       buildWhen: (previous, current) =>
                           previous.isValid != current.isValid,
@@ -186,7 +150,8 @@ class _LoginViewState extends State<LoginView> {
                         return BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, authState) {
                             return ElevatedButton(
-                              onPressed: formState.isValid && authState is! AuthLoading
+                              onPressed:
+                                  formState.isValid && authState is! AuthLoading
                                   ? () {
                                       if (_formKey.currentState!.validate()) {
                                         context.read<AuthCubit>().login(
@@ -196,24 +161,16 @@ class _LoginViewState extends State<LoginView> {
                                       }
                                     }
                                   : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 2,
-                              ),
                               child: authState is AuthLoading
                                   ? const SizedBox(
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
-                                        ),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
                                     )
                                   : const Text(
@@ -229,21 +186,24 @@ class _LoginViewState extends State<LoginView> {
                       },
                     ),
                     const SizedBox(height: 24),
-
-           
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           "Don't have an account? ",
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.8),
+                              ),
                         ),
                         TextButton(
                           onPressed: () => context.go('/signup'),
                           child: Text(
                             'Sign Up',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -266,7 +226,7 @@ class _LoginViewState extends State<LoginView> {
         return AuthConstants.emailRequired;
       case EmailValidationError.invalid:
         return AuthConstants.emailInvalid;
-      default: 
+      default:
         return null;
     }
   }
@@ -281,4 +241,4 @@ class _LoginViewState extends State<LoginView> {
         return null;
     }
   }
-} 
+}

@@ -45,7 +45,7 @@ class _SignupViewState extends State<SignupView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: BlocListener<AuthCubit, AuthState>(
           listener: (context, state) {
@@ -76,22 +76,25 @@ class _SignupViewState extends State<SignupView> {
                     Icon(
                       Icons.person_add_alt_1,
                       size: 80,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'Create Account',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Sign up to get started',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -215,7 +218,9 @@ class _SignupViewState extends State<SignupView> {
                                 : null,
                           ),
                           onChanged: (value) {
-                            context.read<SignupFormCubit>().passwordChanged(value);
+                            context.read<SignupFormCubit>().passwordChanged(
+                              value,
+                            );
                           },
                         );
                       },
@@ -230,7 +235,8 @@ class _SignupViewState extends State<SignupView> {
                         return BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, authState) {
                             return ElevatedButton(
-                              onPressed: formState.isValid && authState is! AuthLoading
+                              onPressed:
+                                  formState.isValid && authState is! AuthLoading
                                   ? () {
                                       if (_formKey.currentState!.validate()) {
                                         context.read<AuthCubit>().signup(
@@ -244,7 +250,9 @@ class _SignupViewState extends State<SignupView> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -256,9 +264,10 @@ class _SignupViewState extends State<SignupView> {
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
-                                        ),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
                                     )
                                   : const Text(
@@ -337,4 +346,4 @@ class _SignupViewState extends State<SignupView> {
         return null;
     }
   }
-} 
+}

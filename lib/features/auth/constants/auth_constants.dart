@@ -15,6 +15,9 @@ class AuthConstants {
   static String completedAdminRequest(int id) => '/api/transports/$id/complete';
   static String showTransportHistory = '/api/users/staff/completed-rides';
 
+  //stats
+  static const String getStaffStats = '';
+
   // Storage Keys
   static const String userKey = 'user_data';
 

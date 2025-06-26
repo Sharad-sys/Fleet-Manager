@@ -25,16 +25,16 @@ final ThemeData fleetDarkTheme = ThemeData(
     bodySmall: TextStyle(color: Colors.white),
   ),
 
-  cardColor: Colors.white.withOpacity(0.05),
+  cardColor: Colors.white.withValues(alpha: 0.05),
   canvasColor: const Color(0xFF1e293b),
-  dialogBackgroundColor: Colors.white.withOpacity(0.05),
+ // dialogBackgroundColor: Colors.white.withValues(alpha: 0.05),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF2563eb),
       foregroundColor: Colors.white,
       elevation: 6,
-      shadowColor: const Color(0xFF3b82f6).withOpacity(0.25),
+      shadowColor: const Color(0xFF3b82f6).withValues(alpha: 0.25),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   ),
@@ -52,7 +52,7 @@ final ThemeData fleetDarkTheme = ThemeData(
 
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Colors.white.withOpacity(0.05),
+    fillColor: Colors.white.withValues(alpha: 0.05),
     hintStyle: const TextStyle(color: Color(0xFF94a3b8)),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -68,8 +68,8 @@ final ThemeData fleetDarkTheme = ThemeData(
     primary: Color(0xFF2563eb),
     secondary: Color(0xFF0ea5e9),
     error: Color(0xFFef4444),
-    background: Color(0xFF0f172a),
-    surface: Color(0xFF1e293b),
+    surface: Color(0xFF0f172a),
+    //surface: Color(0xFF1e293b),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Color(0xFFcbd5e1),
