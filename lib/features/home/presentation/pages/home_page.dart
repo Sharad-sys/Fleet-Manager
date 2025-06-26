@@ -4,6 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tester/features/auth/cubit/auth_cubit.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
+import 'package:tester/features/home/presentation/widgets/bottom_nav_bar.dart';
 import 'package:tester/features/map/application/map_cubit.dart';
 import 'package:tester/features/map/application/map_state.dart';
 import 'package:tester/features/map/presentation/widgets/simulate_location_button.dart';
