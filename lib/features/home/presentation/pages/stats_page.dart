@@ -3,99 +3,96 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tester/features/home/application/cubit/stats_cubit.dart';
 import 'package:tester/features/home/application/cubit/stats_state.dart';
 import 'package:tester/features/home/presentation/widgets/transport_stats_chart.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
-class StatsPage extends StatefulWidget {
+class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
 
   @override
-  State<StatsPage> createState() => _StatsPageState();
-}
-
-class _StatsPageState extends State<StatsPage> {
-  @override
-  void initState() {
-    super.initState();
-
-    context.read<StatsCubit>().getMyStats();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<StatsCubit, StatsState>(
-      builder: (context, state) {
-        if (state is StatsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (state is StatsFailure) {
-          return Center(
-            child: Text(
-              state.message,
-              style: const TextStyle(color: Colors.red),
-            ),
-          );
-        }
-
-        if (state is StatsSucess) {
-          final stats = state.transportStats;
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Your Transport Stats',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+    return VisibilityDetector(
+      key: const Key('stats-page'),
+      onVisibilityChanged: (info){
+          if (info.visibleFraction > 0.5) {
+      context.read<StatsCubit>().getMyStats();
+    }
+      },
+      child: BlocBuilder<StatsCubit, StatsState>(
+        builder: (context, state) {
+          if (state is StatsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+      
+          if (state is StatsFailure) {
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+      
+          if (state is StatsSucess) {
+            final stats = state.transportStats;
+      
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  'Your Transport Stats',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                centerTitle: true,
+                elevation: 2,
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      'Overview',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TransportStatsChart(
+                      completed: stats.totalCompleted,
+                      ongoing: stats.ongoing,
+                      rejected: stats.rejected,
+                    ),
+                    const SizedBox(height: 30),
+                    _buildStatCard(
+                      title: 'Total Completed',
+                      count: stats.totalCompleted,
+                      color: Colors.green,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildStatCard(
+                      title: 'Ongoing',
+                      count: stats.ongoing,
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildStatCard(
+                      title: 'Rejected',
+                      count: stats.rejected,
+                      color: Colors.red,
+                    ),
+                  ],
                 ),
               ),
-              centerTitle: true,
-              elevation: 2,
-            ),
-            body: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    'Overview',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onPrimary.withValues(alpha: 0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TransportStatsChart(
-                    completed: stats.totalCompleted,
-                    ongoing: stats.ongoing,
-                    rejected: stats.rejected,
-                  ),
-                  const SizedBox(height: 30),
-                  _buildStatCard(
-                    title: 'Total Completed',
-                    count: stats.totalCompleted,
-                    color: Colors.green,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildStatCard(
-                    title: 'Ongoing',
-                    count: stats.ongoing,
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildStatCard(
-                    title: 'Rejected',
-                    count: stats.rejected,
-                    color: Colors.red,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        return const SizedBox.shrink();
-      },
+            );
+          }
+      
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 
