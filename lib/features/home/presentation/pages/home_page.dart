@@ -4,6 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tester/features/auth/cubit/auth_cubit.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
+import 'package:tester/features/home/application/cubit/stats_cubit.dart';
 import 'package:tester/features/map/application/map_cubit.dart';
 import 'package:tester/features/map/application/map_state.dart';
 import 'package:tester/features/map/presentation/widgets/simulate_location_button.dart';
@@ -270,9 +271,12 @@ class _HomePageState extends State<HomePage> {
                                                   MainAxisAlignment.end,
                                               children: [
                                                 TextButton.icon(
-                                                  onPressed: () => context
-                                                      .read<TransportCubit>()
-                                                      .rejectRequest(tr.id),
+                                                  onPressed: () {
+                                                      context.read<StatsCubit>().getMyStats();
+                                                    context
+                                                        .read<TransportCubit>()
+                                                        .rejectRequest(tr.id);
+                                                  },
                                                   icon: const Icon(
                                                     Icons.cancel,
                                                     color: Colors.red,
@@ -286,9 +290,14 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 const SizedBox(width: 8),
                                                 ElevatedButton.icon(
-                                                  onPressed: () => context
-                                                      .read<TransportCubit>()
-                                                      .acceptRequest(tr.id),
+                                                  onPressed: () {
+                                                    context
+                                                        .read<StatsCubit>()
+                                                        .getMyStats();
+                                                    context
+                                                        .read<TransportCubit>()
+                                                        .acceptRequest(tr.id);
+                                                  },
                                                   icon: const Icon(Icons.check),
                                                   label: const Text('Accept'),
                                                 ),
