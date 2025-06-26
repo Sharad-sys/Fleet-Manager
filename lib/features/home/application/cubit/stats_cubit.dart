@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tester/features/auth/repositories/auth_repository.dart';
 import 'package:tester/features/home/application/cubit/stats_state.dart';
