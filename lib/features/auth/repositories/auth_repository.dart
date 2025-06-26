@@ -218,15 +218,26 @@ class AuthRepository {
     }
   }
 
-Future<List<Placemark>> convertCoordinatesToAddress(double lat, double long) async {
-  try {
-    final placemarks = await placemarkFromCoordinates(lat, long);
-    return placemarks;
-  } catch (e) {
-    print('Error during reverse geocoding: $e');
-    throw Exception('Failed to convert coordinates to address: $e');
+  Future<Response> getMyStats() async {
+    try {
+      final response = await _apiService.get(AuthConstants.getMyStats);
+      return response;
+    } catch (e) {
+      print('exception: $e');
+      throw Exception('get Ransport failed $e');
+    }
   }
-}
 
-
+  Future<List<Placemark>> convertCoordinatesToAddress(
+    double lat,
+    double long,
+  ) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(lat, long);
+      return placemarks;
+    } catch (e) {
+      print('Error during reverse geocoding: $e');
+      throw Exception('Failed to convert coordinates to address: $e');
+    }
+  }
 }
