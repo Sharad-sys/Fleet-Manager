@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tester/features/auth/cubit/auth_cubit.dart';
+import 'package:tester/features/auth/cubit/auth_state.dart';
 import 'package:tester/features/home/presentation/pages/home_page.dart';
 import 'package:tester/features/home/presentation/pages/stats_page.dart';
 import 'package:tester/features/home/presentation/widgets/bottom_nav_bar.dart';
@@ -43,7 +44,20 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          if (state is AuthAuthenticated) {
+            return IndexedStack(index: _currentIndex, children: _screens);
+          } else if (state is AuthUnauthenticated) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => context.go('/login'),
+            );
+            return const SizedBox();
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTappedItem,

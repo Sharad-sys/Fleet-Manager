@@ -8,7 +8,6 @@ import 'package:tester/features/map/presentation/map_screen.dart';
 import '../../features/auth/cubit/auth_cubit.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
-import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 
 class AppRouter {
