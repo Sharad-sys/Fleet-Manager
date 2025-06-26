@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:tester/features/auth/cubit/auth_state.dart';
 import 'package:tester/features/history/presentation/history_screen.dart';
+import 'package:tester/features/home/presentation/pages/dashboard_page.dart';
 import 'package:tester/features/map/presentation/map_screen.dart';
 import '../../features/auth/cubit/auth_cubit.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -55,7 +56,7 @@ class AppRouter {
           path: '/signup',
           builder: (context, state) => const SignupPage(),
         ),
-        GoRoute(path: '/home', builder: (context, state) => HomePage()),
+        GoRoute(path: '/home', builder: (context, state) => DashboardPage()),
         GoRoute(
           path: '/map',
           builder: (context, state) {

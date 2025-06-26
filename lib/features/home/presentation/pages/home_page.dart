@@ -56,13 +56,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(icon: const Icon(Icons.history), onPressed: () => context.go('/history')),
-          IconButton(icon: const Icon(Icons.logout), onPressed: () => context.read<AuthCubit>().logout()),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Dashboard'),
+      //   actions: [
+      //     IconButton(icon: const Icon(Icons.history), onPressed: () => context.go('/history')),
+      //     IconButton(icon: const Icon(Icons.logout), onPressed: () => context.read<AuthCubit>().logout()),
+      //   ],
+      // ),
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, authState) {
           if (authState is AuthAuthenticated) {
