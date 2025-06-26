@@ -105,13 +105,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.directions_car, color: Colors.blue),
+                            const Icon(
+                              Icons.directions_car,
+                              color: Colors.blue,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               "Ride ID: ${ride.id}",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary.withValues(alpha: 0.8),
                               ),
                             ),
                           ],
@@ -119,12 +125,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
+                            const Icon(
+                              Icons.calendar_today,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 "Accepted at: ${formatDateTime(ride.acceptedAt)}",
-                                style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimary
+                                      .withValues(alpha: 0.7),
+                                ),
                               ),
                             ),
                           ],
@@ -133,12 +146,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.location_on, size: 18, color: Colors.redAccent),
+                            const Icon(
+                              Icons.location_on,
+                              size: 18,
+                              color: Colors.redAccent,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 "From: ${_addressCache[fromKey] ?? 'Resolving...'}",
-                                style: const TextStyle(fontSize: 14),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).colorScheme.onPrimary
+                                      .withValues(alpha: 0.6),
+                                ),
                               ),
                             ),
                           ],
@@ -147,12 +168,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.flag, size: 18, color: Colors.green),
+                            const Icon(
+                              Icons.flag,
+                              size: 18,
+                              color: Colors.green,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 "To: ${_addressCache[toKey] ?? 'Resolving...'}",
-                                style: const TextStyle(fontSize: 14),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).colorScheme.onPrimary
+                                      .withValues(alpha: 0.6),
+                                ),
                               ),
                             ),
                           ],
