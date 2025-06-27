@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tester/features/auth/constants/auth_constants.dart';
 import 'package:tester/features/auth/validation/email.dart';
 import 'package:tester/features/auth/validation/name.dart';
@@ -114,10 +115,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Icon(
-                          Icons.person_outline,
-                          size: 80,
-                          color: Theme.of(context).colorScheme.primary,
+                        // Icon(
+                        //   Icons.person_outline,
+                        //   size: 80,
+                        //   color: Theme.of(context).colorScheme.primary,
+                        // ),
+                        SizedBox(
+                          height: 180,
+                          width: 180,
+                          child: Lottie.asset('lib/assets/update.json'),
                         ),
                         const SizedBox(height: 24),
                         Text(
