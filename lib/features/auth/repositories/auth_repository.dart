@@ -228,6 +228,17 @@ class AuthRepository {
     }
   }
 
+  Future<Response> getUserDetails()async {
+         try {
+      final response = await _apiService.get(AuthConstants.getAboutMe);
+      return response;
+    } catch (e) {
+      print('exception: $e');
+      throw Exception('get Ransport failed $e');
+    }
+    }
+
+
   Future<List<Placemark>> convertCoordinatesToAddress(
     double lat,
     double long,

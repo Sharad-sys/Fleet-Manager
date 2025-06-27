@@ -7,6 +7,9 @@ class AuthConstants {
   static const String signupEndpoint = '/api/auth/register';
   static const String logoutEndpoint = '/api/auth/logout';
 
+  //update request
+  static const String getAboutMe = '/api/auth/me';
+
   //transport requests
   static const String pushToBackendEndPoint = '/api/vehicle-locations';
   static const String getRequestEndpoint = '/api/transports?showAll=true';
