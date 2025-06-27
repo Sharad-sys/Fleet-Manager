@@ -13,7 +13,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> getUserDetails() async {
     emit(ProfileLoading());
     try {
-      final response = await _authRepository.getMyStats();
+      final response = await _authRepository.getUserDetails();
       final user = Profile.fromJson(response.data['data']);
       emit(ProfileSuccess(user: user));
     } catch (e) {

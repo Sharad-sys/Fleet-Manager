@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:tester/features/auth/models/user.dart';
 import 'package:tester/features/home/model/profile_model/profile_model.dart';
 
 abstract class ProfileState extends Equatable {
